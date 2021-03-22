@@ -1,0 +1,166 @@
+html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  color: #3d4b60;
+  font-family: "Open Sans", Arial, sans-serif;
+}
+
+.form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+form {
+  display: block;
+  width: 100%;
+  max-width: 25em;
+  padding: 2em 1.5em;
+  text-align: center;
+}
+
+@media screen and (min-width: 40em) {
+
+  body {
+    background: #eee;
+  }
+
+  .form-container {
+    padding: 1em;
+  }
+
+  form {
+    padding: 3em 2em 2em;
+    background: #fff;
+    border-radius: 1em;
+    box-shadow: 0 5px 15px rgba(0,0,0,.1);
+  }
+
+}
+
+.form-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 220px;
+  margin: 0 auto 2em;
+}
+
+h1 {
+  font-size: 0;
+}
+
+label,
+input {
+  display: block;
+  width: 100%;
+}
+
+label {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: .5em;
+}
+
+input {
+  border: 2px solid #ddd;
+  background-color: #fefefe;
+  margin-bottom: 1em;
+  padding: 1em;
+  font-size: 1em;
+  border-radius: .5em;
+  -webkit-appearance: none;
+}
+input:focus,
+input:active {
+  outline: none;
+  border-color: #4299e1;
+}
+
+button {
+  position: relative;
+  width: 100%;
+  padding: 1em 2em;
+  margin: .5em 0 0;
+  font-size: 1.25em;
+  font-weight: 600;
+  font-family: inherit;
+  background-color: #4299e1;
+  color: #fff;
+  border: 0;
+  border-radius: 100em;
+  cursor: pointer;
+  transition: opacity .3s ease, filter .3s ease;
+}
+button:hover {
+  filter: brightness(110%);
+}
+button:active,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2571b1;
+}
+button.is-loading {
+  opacity: .5;
+  pointer-events: none;
+  color: transparent;
+}
+
+button svg {
+  display: none;
+  font-size: 1.5em;
+  width: 1em;
+  height: 1em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -0.5em 0 0 -0.5em;
+  color: #fff;
+  animation: spin .75s linear infinite;
+}
+button.is-loading svg {
+  display: block;
+}
+
+@keyframes spin {
+  
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+
+}
+
+
+/* Login Notice (Error/Success) */
+
+.login-notice {
+  display: none;
+  padding: .75em 1em;
+  margin: .5em auto 1.5em;
+  background-color: #4299e1;
+  color: #fff;
+  border-radius: .25em;
+}
+.login-notice.is-shown {
+  display: inline-flex;
+}
+.login-notice.error {
+  background-color: #e53e3e;
+}
+.login-notice.success {
+  background-color: #48bb78;
+}
