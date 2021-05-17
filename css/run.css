@@ -93,6 +93,7 @@ header button:hover {
 }
 
 .output.is-loading::before {
+  box-sizing: border-box;
   content: '';
   position: absolute;
   display: block;

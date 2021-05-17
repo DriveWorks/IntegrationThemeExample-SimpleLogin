@@ -9,25 +9,27 @@ checkSession();
 
 // Construct DriveWorks Live client
 let DW_CLIENT;
-try {
-    DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
-} catch (error) {
-    redirectToLogin("Cannot access client.", "error");
+function dwClientLoaded() {
+    try {
+        DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
+
+        // Set client's session id passed from login
+        DW_CLIENT._sessionId = localStorage.getItem("sessionId");
+    } catch (error) {
+        redirectToLogin("Cannot access client.", "error");
+    }
+
+    run();
 }
 
-// Set client's session Id
-DW_CLIENT._sessionId = localStorage.getItem("sessionId");
-
 // Run on load
-(async function () {
-
+async function run() {
     showUsername();
 
     try {
-
         // Create new specification
         const specification = await DW_CLIENT.createSpecification(GROUP_ALIAS, PROJECT_NAME);
-        if (!specification._id){
+        if (!specification._id) {
             redirectToLogin("No connection found.", "error");
             return;
         }
@@ -43,29 +45,28 @@ DW_CLIENT._sessionId = localStorage.getItem("sessionId");
         // Remove loading state
         specificationOutput.classList.remove("is-loading");
 
+        // (Optional) Prevent Specification timeout
+        pingSpecification(specification);
+
     } catch (error) {
         console.log(error);
 
         // If authorization error, handle appropriately
-        if (String(error).includes("401")){
+        if (String(error).includes("401")) {
             redirectToLogin("Please login to view that.", "error");
             return;
         }
-
     }
-
-})();
+}
 
 /**
  * Check for stored session
  */
-function checkSession(){
-
+function checkSession() {
     // If no session is stored (e.g. not logged in), redirect to login
-    if (CURRENT_SESSION === null || CURRENT_SESSION === "undefined"){
+    if (CURRENT_SESSION === null || CURRENT_SESSION === "undefined") {
         redirectToLogin("Please login to view that.", "error");
     }
-
 }
 
 /**
@@ -76,10 +77,9 @@ function checkSession(){
  *
  * @param specification The Specification object.
  */
-function pingSpecification(specification){
-
+function pingSpecification(specification) {
     // Disable ping if interval is 0
-    if (config.specificationPingInterval === 0){
+    if (config.specificationPingInterval === 0) {
         return;
     }
 
@@ -88,24 +88,19 @@ function pingSpecification(specification){
 
     // Schedule next ping
     setTimeout(pingSpecification, config.specificationPingInterval * 1000, specification);
-
 }
 
 /**
  * Handle logout
  */
-async function handleLogout(text = "You have been logged out.", state = "success"){
-
+async function handleLogout(text = "You have been logged out.", state = "success") {
     try {
-
         // Logout of Group
         await DW_CLIENT.logoutGroup(GROUP_ALIAS);
         redirectToLogin(text, state);
-
     } catch (error) {
         console.log(error);
     }
-
 }
 
 // Attach logout function to button click
@@ -115,15 +110,14 @@ document.getElementById("logout-button").onclick = function() {
 
 // Quick Logout (?bye URL query)
 const urlQuery = new URLSearchParams(window.location.search);
-if (urlQuery.has("bye")){
+if (urlQuery.has("bye")) {
     handleLogout();
 }
 
 /**
  * Set login screen message
  */
-function redirectToLogin(text, state){
-
+function redirectToLogin(text, state) {
     // Clear all stored credentials
     localStorage.clear();
 
@@ -132,13 +126,12 @@ function redirectToLogin(text, state){
 
     // Redirect to login screen
     window.location.href = "index.html";
-
 }
 
 /**
  * Set login screen message
  */
-function setLoginMessage(text, state){
+function setLoginMessage(text, state) {
     message = {
         text: text,
         state: state
@@ -149,9 +142,9 @@ function setLoginMessage(text, state){
 /**
  * Show username in header
  */
-function showUsername(){
+function showUsername() {
     const username = localStorage.getItem("sessionUser");
-    if (username){
+    if (username) {
         document.getElementById("username").textContent = username;
         document.getElementById("header-user").classList.add("is-shown");
     }

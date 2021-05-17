@@ -12,10 +12,13 @@ showLoginNotice();
 
 // Construct DriveWorks Live client
 let DW_CLIENT;
-try {
-    DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
-} catch (error) {
-    loginError(error, "Cannot access client.");
+function dwClientLoaded() {
+    try {
+        DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
+    } catch (error) {
+        loginError(error, "Cannot access client.");
+        return;
+    }
 }
 
 /**
@@ -24,9 +27,14 @@ try {
  * @param evt Form submit event
  */
 async function handleLogin(evt) {
-
     // Prevent browser handling submission
     evt.preventDefault();
+
+    // Show error if cannot connect to client
+    if (!DW_CLIENT) {
+        loginError(false, "Cannot connect to client");
+        return;
+    }
 
     // Get user credentials
     const inputUsername = document.getElementById("username").value;
@@ -37,7 +45,6 @@ async function handleLogin(evt) {
     };
 
     try {
-
         // Show loading state
         loginButton.classList.add("is-loading");
 
@@ -45,7 +52,7 @@ async function handleLogin(evt) {
         const result = await DW_CLIENT.loginGroup(GROUP_ALIAS, userCredentials);
 
         // Show error is login failed
-        if (!result){
+        if (!result) {
             loginError(false, "No connection found.");
             return;
         }
@@ -56,11 +63,9 @@ async function handleLogin(evt) {
 
         // Direct to running Specification
         window.location.href = "run.html";
-
     } catch (error) {
         loginError(error, "Invalid login, please try again.");
     }
-
 }
 
 /**
@@ -69,10 +74,9 @@ async function handleLogin(evt) {
  * @param {Object} [text] The originating error
  * @param {string} [text] The text displayed to the user on the login screen
  */
-function loginError(error, text){
-
+function loginError(error, text) {
     // Log error to console
-    if (error){
+    if (error) {
         console.log(error);
     }
 
@@ -88,18 +92,16 @@ function loginError(error, text){
 
     // Remove loading state
     loginButton.classList.remove("is-loading");
-
 }
 
 /**
  * Show login notice
  */
-function showLoginNotice(){
-
+function showLoginNotice() {
     const loginNotice = document.getElementById("login-notice");
     const notice = JSON.parse(localStorage.getItem("loginNotice"));
 
-    if (notice){
+    if (notice) {
 
         // Display feedback
         loginNotice.innerText = notice.text;
@@ -108,7 +110,5 @@ function showLoginNotice(){
 
         // Clear message
         localStorage.removeItem("loginNotice");
-
     }
-
 }
