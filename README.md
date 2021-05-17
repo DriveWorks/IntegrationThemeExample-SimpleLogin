@@ -1,5 +1,5 @@
 # DriveWorks Live - Integration Theme Example - Simple Login
-### Version: 19.0
+### Release: 19.0
 #### Minimum DriveWorks Version: 18.0
 
 A simple distributable template that renders a predefined project after a valid login.
