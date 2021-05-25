@@ -33,10 +33,10 @@
             <div id="login-notice" class="login-notice"></div>
 
             <label for="username">Username</label>
-            <input type="text" id="username" value="" autofocus />
+            <input type="text" id="username" value="" autocomplete="username" autofocus />
 
             <label for="password">Password</label>
-            <input type="password" id="password" value="" />
+            <input type="password" id="password" value="" autocomplete="current-password" />
 
             <button type="submit" id="login-button">
                 Login
@@ -48,14 +48,22 @@
         </form>
     </div>
 
-    <!-- Load Client SDK library -->
-    <!-- Replace "YOUR-DRIVEWORKS-LIVE-SERVER-URL" with your DriveWorks Live server address, which serves the landing page -->
-    <script src="https://YOUR-DRIVEWORKS-LIVE-SERVER-URL/DriveWorksLiveIntegrationClient.min.js"></script>
-
-    <!-- Load Configuration -->
+    <!-- Scripts -->
     <script src="config.js"></script>
-
     <script src="js/login.js"></script>
+
+    <!-- Option A) Directly load Client Library -->
+    <!-- <script src="https://YOUR-DRIVEWORKS-LIVE-SERVER-URL.COM/DriveworksLiveIntegrationClient.min.js" onload="dwClientLoaded()"></script> -->
+
+    <!-- Option B) Inject Client Library dynamically from server url in config file -->
+    <script>
+        (function(doc, script) {
+            script = doc.createElement("script");
+            script.src = config.serverUrl + "/DriveWorksLiveIntegrationClient.min.js";
+            script.onload = () => dwClientLoaded(); // Custom local function run when client has loaded
+            doc.body.appendChild(script);
+        }(document));
+    </script>
 
 </body>
 </html>
