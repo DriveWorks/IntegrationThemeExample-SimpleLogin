@@ -10,4 +10,8 @@ const config = {
     // This function prevents a Specification timing out as long as the page is in view.
     // Disable the ping by changing the setting to 0
     specificationPingInterval: 0,
+    // (Optional) Configure 'Run' view
+    run: {
+        showWarningOnExit: false, // Toggle warning dialog when exiting "Run" view with potentially unsaved changes (where supported)
+    },
 };

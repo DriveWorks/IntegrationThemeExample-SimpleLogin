@@ -1,5 +1,5 @@
 # DriveWorks Live - Integration Theme Example - Simple Login
-### Release: 19.0
+### Release: 19.2
 #### Minimum DriveWorks Version: 18.0
 
 A simple distributable template that renders a predefined project after a valid login.
@@ -7,10 +7,18 @@ A simple distributable template that renders a predefined project after a valid 
 Please note: DriveWorks are not accepting pull requests for this example.  
 Join our [online community](https://my.driveworks.co.uk) for discussion, resources and to suggest other examples.
 
-### This example:
-- Shows a login screen - credentials attached to a config file
-- Connects to the DriveWorks API
-- After a successful login, renders a DriveWorks Form with a basic header
+### Overview:
+- Dynamically injects the DriveWorks Live Client library script using the configured server url (see config.js).
+    - Provides an example of loading from a static URL, if preferred.
+- Connects to the DriveWorks Live Integration Theme API.
+- 'Login' view
+    - Shows a standard login screen - requesting username & password.
+    - Connection details loaded from config file.
+- 'Run' view
+    - After a successful login, redirects to a running Specification - controlled via config file.
+    - Renders a DriveWorks Form with a basic header.
+    - Redirect to login with error if accessed without valid session.
+    - Shows Specification Name in tab title.
 
 ### To use:
 1. Clone this repository, or download as a .zip
@@ -48,6 +56,7 @@ If you are unable to use the dynamic library loading demonstrated in this exampl
         * Ensure you are running DriveWorks 18.2 or above
         * Ensure HTTPS is enabled in DriveWorks Live's settings
         * Ensure a valid SSL certificate has been configured via DriveWorksConfigUser.xml.
+        * Ensure if using an incognito/private window, third-party cookies are not blocked (see browser settings).
         * See [Integration Theme Settings](https://docs.driveworkspro.com/Topic/IntegrationThemeSettings) for additional guidance.
 
 ---

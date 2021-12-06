@@ -5,13 +5,23 @@ const GROUP_ALIAS = config.groupAlias;
 // Elements
 const loginButton = document.getElementById("login-button");
 const loginForm = document.getElementById("login-form");
-loginForm.addEventListener("submit", handleLogin);
 
-// Display any notice passed e.g. "You have been logged out."
-showLoginNotice();
-
-// Construct DriveWorks Live client
+// Global client
 let DW_CLIENT;
+
+/**
+ * On page load.
+ */
+(() => {
+    loginForm.addEventListener("submit", handleLogin);
+
+    // Display any notice passed e.g. "You have been logged out."
+    showLoginNotice();
+})();
+
+/**
+ * DriveWorks Live client loaded.
+ */
 function dwClientLoaded() {
     try {
         DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
@@ -22,13 +32,14 @@ function dwClientLoaded() {
 }
 
 /**
- * Handle login
+ * Handle DriveWorks Group login.
  *
- * @param evt Form submit event
+ * @param {Object} event - Form submit event.
  */
-async function handleLogin(evt) {
+async function handleLogin(event) {
+
     // Prevent browser handling submission
-    evt.preventDefault();
+    event.preventDefault();
 
     // Show error if cannot connect to client
     if (!DW_CLIENT) {
@@ -69,12 +80,13 @@ async function handleLogin(evt) {
 }
 
 /**
- * Show login error
+ * Show login error.
  *
- * @param {Object} [text] The originating error
- * @param {string} [text] The text displayed to the user on the login screen
+ * @param {Object} error - The originating error object.
+ * @param {string} text - The text displayed to the user on the login screen.
  */
 function loginError(error, text) {
+
     // Log error to console
     if (error) {
         console.log(error);
@@ -95,7 +107,7 @@ function loginError(error, text) {
 }
 
 /**
- * Show login notice
+ * Show login notice.
  */
 function showLoginNotice() {
     const loginNotice = document.getElementById("login-notice");

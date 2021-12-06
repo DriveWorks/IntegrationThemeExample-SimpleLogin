@@ -5,12 +5,39 @@ const PROJECT_NAME = config.projectName;
 
 // Get session
 const CURRENT_SESSION = localStorage.getItem("sessionId");
-checkSession();
 
-// Construct DriveWorks Live client
+// Elements
+const logoutButton = document.getElementById("logout-button");
+
+// Global client
 let DW_CLIENT;
+
+/**
+ * On page load.
+ */
+(() => {
+
+    // Check if Session Id exists
+    checkSession();
+
+    // Attach logout function to button click
+    logoutButton.onclick = () => handleLogout();
+
+    // Quick Logout (?bye URL query)
+    const urlQuery = new URLSearchParams(window.location.search);
+    if (urlQuery.has("bye")) {
+        handleLogout();
+    }
+
+    setTabTitle(PROJECT_NAME);
+})();
+
+/**
+ * DriveWorks Live client loaded.
+ */
 function dwClientLoaded() {
     try {
+        // Construct DriveWorks Live client
         DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
 
         // Set client's session id passed from login
@@ -22,7 +49,9 @@ function dwClientLoaded() {
     run();
 }
 
-// Run on load
+/**
+ * Setup page and run Specification, attach event handling.
+ */
 async function run() {
     showUsername();
 
@@ -48,6 +77,12 @@ async function run() {
         // (Optional) Prevent Specification timeout
         pingSpecification(specification);
 
+        // (Optional) Show warning dialog when exiting page after Form renders
+        attachPageUnloadEvent();
+
+        // (Optional) Show Specification Name in browser tab title
+        const formData = await specification.getFormData();
+        setTabTitle(formData.form.specificationName);
     } catch (error) {
         console.log(error);
 
@@ -60,7 +95,7 @@ async function run() {
 }
 
 /**
- * Check for stored session
+ * Check for stored session id. Redirect to login if not found.
  */
 function checkSession() {
     // If no session is stored (e.g. not logged in), redirect to login
@@ -70,12 +105,12 @@ function checkSession() {
 }
 
 /**
- * Ping the running Specification
+ * Ping the running Specification to prevent timeout.
  *
  * A Specification will timeout after a configured period of inactivity (see DriveWorksConfigUser.xml).
  * This function prevents a Specification timing out as long as the page is in view.
  *
- * @param specification The Specification object.
+ * @param {object} specification - The Specification object.
  */
 function pingSpecification(specification) {
     // Disable ping if interval is 0
@@ -91,31 +126,32 @@ function pingSpecification(specification) {
 }
 
 /**
- * Handle logout
+ * Handle Group logout.
+ * 
+ * @param {string} [text] - The message to display when directed to the login screen.
+ * @param {string} [state] - The type of message state (error/success).
  */
 async function handleLogout(text = "You have been logged out.", state = "success") {
     try {
+        logoutButton.classList.add("is-loading");
+
+        // Remove warning on unload - intentional navigation
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+
         // Logout of Group
         await DW_CLIENT.logoutGroup(GROUP_ALIAS);
+
         redirectToLogin(text, state);
     } catch (error) {
         console.log(error);
     }
 }
 
-// Attach logout function to button click
-document.getElementById("logout-button").onclick = function() {
-    handleLogout();
-};
-
-// Quick Logout (?bye URL query)
-const urlQuery = new URLSearchParams(window.location.search);
-if (urlQuery.has("bye")) {
-    handleLogout();
-}
-
 /**
- * Set login screen message
+ * Redirect to login screen.
+ * 
+ * @param {string} text - The message to display when directed to the login screen.
+ * @param {string} state - The type of message state (error/success).
  */
 function redirectToLogin(text, state) {
     // Clear all stored credentials
@@ -129,7 +165,10 @@ function redirectToLogin(text, state) {
 }
 
 /**
- * Set login screen message
+ * Set login screen message.
+ * 
+ * @param {string} text - The message to display when directed to the login screen.
+ * @param {string} state - The type of message state (error/success).
  */
 function setLoginMessage(text, state) {
     message = {
@@ -140,7 +179,7 @@ function setLoginMessage(text, state) {
 }
 
 /**
- * Show username in header
+ * Display username onscreen.
  */
 function showUsername() {
     const username = localStorage.getItem("sessionUser");
@@ -148,4 +187,32 @@ function showUsername() {
         document.getElementById("username").textContent = username;
         document.getElementById("header-user").classList.add("is-shown");
     }
+}
+
+/**
+ * On page unload, show dialog to confirm navigation.
+ */
+function attachPageUnloadEvent() {
+    if (config.run.showWarningOnExit) {
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+    }
+}
+
+/**
+ * Handle beforeunload event.
+ * 
+ * @param {Object} event - The beforeunload event object
+ */
+function beforeUnloadHandler(event) {
+    event.preventDefault();
+    event.returnValue = "Are you sure you want to leave this page?";
+}
+
+/**
+ * Set browser tab title
+ * 
+ * @param {Object} text - The text to display in the title.
+ */
+function setTabTitle(text) {
+    document.title = `${text} | Run - DriveWorks`;
 }
