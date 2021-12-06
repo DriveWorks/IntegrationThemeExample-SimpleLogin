@@ -9,9 +9,7 @@ body {
   position: relative;
 }
 
-
 /* Simple Header */
-
 header,
 header * {
   box-sizing: border-box;
@@ -53,7 +51,7 @@ header .header-user {
 }
 
 @media screen and (min-width: 640px) {
-  
+
   header .header-user.is-shown {
     display: flex;
     align-items: center;
@@ -63,6 +61,7 @@ header .header-user {
 }
 
 header button {
+  position: relative;
   display: block;
   padding: .75em 2em;
   margin: 0;
@@ -79,10 +78,29 @@ header button {
 header button:hover {
   background-color: rgba(0,0,0,.2);
 }
+header button.is-loading {
+  opacity: .75;
+  color: transparent;
+  pointer-events: none;
+}
 
+header button svg.loading {
+  display: none;
+  font-size: 1.5em;
+  width: 1em;
+  height: 1em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -0.5em 0 0 -0.5em;
+  color: #fff;
+  animation: spin .75s linear infinite;
+}
+header button.is-loading svg.loading {
+  display: block;
+}
 
 /* Form Output */
-
 .output {
   position: absolute;
   bottom: 0;
