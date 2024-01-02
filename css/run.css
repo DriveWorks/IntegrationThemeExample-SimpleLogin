@@ -75,9 +75,11 @@ header button {
   cursor: pointer;
   transition: background-color .3s ease;
 }
+
 header button:hover {
   background-color: rgba(0,0,0,.2);
 }
+
 header button.is-loading {
   opacity: .75;
   color: transparent;
@@ -96,6 +98,7 @@ header button svg.loading {
   color: #fff;
   animation: spin .75s linear infinite;
 }
+
 header button.is-loading svg.loading {
   display: block;
 }
@@ -128,12 +131,10 @@ header button.is-loading svg.loading {
 }
 
 @keyframes spin {
-
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
   }
-
 }
