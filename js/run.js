@@ -113,8 +113,9 @@ function checkSession() {
  * @param {object} specification - The Specification object.
  */
 function pingSpecification(specification) {
-    // Disable ping if interval is 0
-    if (config.specificationPingInterval === 0) {
+
+    // Disable ping if interval is 0, or not a number
+    if (typeof config.specificationPingInterval !== "number" || config.specificationPingInterval === 0) {
         return;
     }
 

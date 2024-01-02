@@ -3,8 +3,13 @@ const SERVER_URL = config.serverUrl;
 const GROUP_ALIAS = config.groupAlias;
 
 // Elements
-const loginButton = document.getElementById("login-button");
 const loginForm = document.getElementById("login-form");
+const loginButton = document.getElementById("login-button");
+const loginSSOButton = document.getElementById("login-sso-button");
+
+// Error Messages
+const genericErrorMessage = "There has been an issue.";
+const clientErrorMessage = "Cannot access client.";
 
 // Global client
 let DW_CLIENT;
@@ -13,7 +18,11 @@ let DW_CLIENT;
  * On page load.
  */
 (() => {
-    loginForm.addEventListener("submit", handleLogin);
+    loginForm.addEventListener("submit", handleLoginForm);
+
+    if (loginSSOButton) {
+        loginSSOButton.addEventListener("click", handleLoginSSO);
+    }
 
     // Display any notice passed e.g. "You have been logged out."
     showLoginNotice();
@@ -26,24 +35,24 @@ function dwClientLoaded() {
     try {
         DW_CLIENT = new window.DriveWorksLiveClient(SERVER_URL);
     } catch (error) {
-        loginError(error, "Cannot access client.");
+        loginError(clientErrorMessage, error);
         return;
     }
 }
 
 /**
- * Handle DriveWorks Group login.
+ * Handle DriveWorks Group login via form credentials.
  *
  * @param {Object} event - Form submit event.
  */
-async function handleLogin(event) {
+async function handleLoginForm(event) {
 
     // Prevent browser handling submission
     event.preventDefault();
 
     // Show error if cannot connect to client
     if (!DW_CLIENT) {
-        loginError(false, "Cannot connect to client");
+        loginError(clientErrorMessage);
         return;
     }
 
@@ -59,33 +68,59 @@ async function handleLogin(event) {
         // Show loading state
         loginButton.classList.add("is-loading");
 
-        // Start session
+        // Start Session
         const result = await DW_CLIENT.loginGroup(GROUP_ALIAS, userCredentials);
 
-        // Show error is login failed
-        if (!result) {
-            loginError(false, "No connection found.");
-            return;
-        }
-
-        // Store session details
-        localStorage.setItem("sessionId", result.sessionId);
-        localStorage.setItem("sessionUser", inputUsername);
-
-        // Direct to running Specification
-        window.location.href = "run.html";
+        loginSuccess(result, inputUsername);
     } catch (error) {
-        loginError(error, "Invalid login, please try again.");
+        loginError(genericErrorMessage, error);
     }
+}
+
+/**
+ * Handle DriveWorks Group login via Single Sign-On (SSO).
+ */
+async function handleLoginSSO() {
+
+    // Show error if cannot connect to client
+    if (!DW_CLIENT) {
+        loginError(clientErrorMessage);
+        return;
+    }
+
+    try {
+        // Start Session
+        const result = await DW_CLIENT.loginSSO(GROUP_ALIAS);
+
+        loginSuccess(result);
+    } catch (error) {
+        loginError(genericErrorMessage, error);
+    }
+}
+
+/**
+ * Handle successful login. Store Session data to localStorage & redirect.
+ */
+function loginSuccess(result, username) {
+
+    // Store session details to localStorage
+    localStorage.setItem("sessionId", result.sessionId);
+
+    if (username) {
+        localStorage.setItem("sessionUsername", username);
+    }
+
+    // Direct to running Specification
+    window.location.href = "run.html";
 }
 
 /**
  * Show login error.
  *
- * @param {Object} error - The originating error object.
  * @param {string} text - The text displayed to the user on the login screen.
+ * @param {Object} error - The originating error object.
  */
-function loginError(error, text) {
+function loginError(text, error) {
 
     // Log error to console
     if (error) {
@@ -95,8 +130,9 @@ function loginError(error, text) {
     // Create and set error message
     message = {
         text: text,
-        state: "error"
+        state: "error",
     };
+
     localStorage.setItem("loginNotice", JSON.stringify(message));
 
     // Show message

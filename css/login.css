@@ -1,6 +1,7 @@
 html {
   box-sizing: border-box;
 }
+
 *,
 *::before,
 *::after {
@@ -70,7 +71,7 @@ input {
 label {
   text-align: left;
   font-weight: 600;
-  margin-bottom: .5em;
+  margin-bottom: .25rem;
 }
 
 input {
@@ -82,6 +83,7 @@ input {
   border-radius: .5em;
   -webkit-appearance: none;
 }
+
 input:focus,
 input:active {
   outline: none;
@@ -91,9 +93,8 @@ input:active {
 button {
   position: relative;
   width: 100%;
-  padding: 1em 2em;
-  margin: .5em 0 0;
-  font-size: 1.25em;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   font-family: inherit;
   background-color: #4299e1;
@@ -103,14 +104,17 @@ button {
   cursor: pointer;
   transition: opacity .3s ease, filter .3s ease;
 }
+
 button:hover {
   filter: brightness(110%);
 }
+
 button:active,
 button:focus {
   outline: none;
   box-shadow: 0 0 0 2px #2571b1;
 }
+
 button.is-loading {
   opacity: .5;
   pointer-events: none;
@@ -129,38 +133,54 @@ button svg {
   color: #fff;
   animation: spin .75s linear infinite;
 }
+
 button.is-loading svg {
   display: block;
 }
 
 @keyframes spin {
-  
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(359deg);
   }
-
 }
 
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    font-size: .875rem;
+    color: rgba(0,0,0,.5);
+}
+
+.login-divider:before,
+.login-divider:after {
+    content: '';
+    flex: 1;
+    border: 1px solid rgba(0,0,0,.05);
+}
 
 /* Login Notice (Error/Success) */
-
 .login-notice {
   display: none;
-  padding: .75em 1em;
-  margin: .5em auto 1.5em;
+  padding: .5em .75em;
+  margin: 0 auto 1.25em;
   background-color: #4299e1;
   color: #fff;
   border-radius: .25em;
 }
+
 .login-notice.is-shown {
   display: inline-flex;
 }
+
 .login-notice.error {
   background-color: #e53e3e;
 }
+
 .login-notice.success {
   background-color: #48bb78;
 }
