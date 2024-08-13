@@ -2,6 +2,7 @@
 const SERVER_URL = config.serverUrl;
 const GROUP_ALIAS = config.groupAlias;
 const PROJECT_NAME = config.projectName;
+const SPECIFICATION_PING_INTERVAL = config.specificationPingInterval;
 
 // Get session
 const CURRENT_SESSION = localStorage.getItem("sessionId");
@@ -74,8 +75,9 @@ async function run() {
         // Remove loading state
         specificationOutput.classList.remove("is-loading");
 
-        // (Optional) Prevent Specification timeout
-        pingSpecification(specification);
+        // Prevent Specification timeout from inactivity, as long as the page is in view.
+        // A Specification will timeout after a configured period of inactivity (see DriveWorksConfigUser.xml).
+        specification.enableAutoPing(SPECIFICATION_PING_INTERVAL);
 
         // (Optional) Show warning dialog when exiting page after Form renders
         attachPageUnloadEvent();
@@ -102,28 +104,6 @@ function checkSession() {
     if (CURRENT_SESSION === null || CURRENT_SESSION === "undefined") {
         redirectToLogin("Please login to view that.", "error");
     }
-}
-
-/**
- * Ping the running Specification to prevent timeout.
- *
- * A Specification will timeout after a configured period of inactivity (see DriveWorksConfigUser.xml).
- * This function prevents a Specification timing out as long as the page is in view.
- *
- * @param {object} specification - The Specification object.
- */
-function pingSpecification(specification) {
-
-    // Disable ping if interval is 0, or not a number
-    if (typeof config.specificationPingInterval !== "number" || config.specificationPingInterval === 0) {
-        return;
-    }
-
-    // Ping Specification to reset timeout
-    specification.ping();
-
-    // Schedule next ping
-    setTimeout(pingSpecification, config.specificationPingInterval * 1000, specification);
 }
 
 /**
